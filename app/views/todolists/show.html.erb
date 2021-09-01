@@ -2,6 +2,7 @@
 <p><%= @list.title %></p>
 <h2>本文</h2>
 <p><%= @list.body %></p>
+<p class="sentiment-score">本文の感情分析スコア[<%= @list.score %>]</p>
 <h2>画像</h2>
 <%= attachment_image_tag @list, :image, :fill, 300, 300, format: 'jpeg' %>
 <div class="tag-box">

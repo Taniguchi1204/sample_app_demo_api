@@ -4,6 +4,7 @@
     <%= attachment_image_tag list, :image, :fill, 200, 200, format: 'jpeg' %>
     <div class="list-comment">
       <span class="list-body"><%= list.body %></span>
+      <span class="sentiment-score">本文の感情分析スコア<%= list.score %></span>
       <span class="list-title"><%=link_to list.title, todolist_path(list.id) %></span>
       <% list.tags.each do |tag| %>
         <span class="label"><%= tag.name %></span>

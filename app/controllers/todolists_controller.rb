@@ -7,11 +7,33 @@ class TodolistsController < ApplicationController
     list = List.new(list_params)
     list.score = Language.get_data(list_params[:body])
     list.save
-    tags = Vision.get_image_data(list.image)    
-    tags.each do |tag|
-      list.tags.create(name: tag)
+    tags_en = Vision.get_image_data(list.image)
+    tags_en.each do |tag|
+      # APIのURL作成
+      api_url = "https://translation.googleapis.com/language/translate/v2?key=#{ENV['GOOGLE_API_KEY']}"
+
+
+      # APIリクエスト用のJSONパラメータ
+      params = {
+                "q": "#{tag}",
+                "source": "en",
+                "target": "ja",
+                "format": "text"
+              }.to_json
+
+      # Google Cloud Vision APIにリクエスト
+      uri = URI.parse(api_url)
+      https = Net::HTTP.new(uri.host, uri.port)
+      https.use_ssl = true
+      request = Net::HTTP::Post.new(uri.request_uri)
+      request['Content-Type'] = 'application/json'
+      response = https.request(request, params)
+      response_body = JSON.parse(response.body)
+      # APIレスポンス出力
+      tag_ja = response_body["data"]["translations"][0]["translatedText"]
+      list.tags.create(name: tag_ja)
     end
-    
+
     redirect_to todolist_path(list.id)
   end
 
@@ -21,6 +43,7 @@ class TodolistsController < ApplicationController
 
   def show
     @list = List.find(params[:id])
+
   end
 
   def edit
